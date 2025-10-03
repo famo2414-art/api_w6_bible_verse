@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function SpecificVerse({ accent = '#2563eb' }) {
   const [ref, setRef] = useState('John 3:16');
-  const [result, setResult] = useState('');
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState('');
 
   async function fetchSpecific() {
-    setLoading(true); setErr(''); setResult('');
+    setLoading(true);
+    setErr('');
+    setResult(null);
     try {
       const q = encodeURIComponent(ref.trim());
       const res = await fetch(`/bible/?passage=${q}&type=json&formatting=plain`);
@@ -24,10 +26,6 @@ export default function SpecificVerse({ accent = '#2563eb' }) {
     }
   }
 
-  useEffect(() => {
-    fetchSpecific();
-  }, []);
-
   return (
     <section style={cardStyle}>
       <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Specific Verse</h2>
@@ -43,21 +41,35 @@ export default function SpecificVerse({ accent = '#2563eb' }) {
           {loading ? 'Loading...' : 'Get Verse'}
         </button>
       </div>
-      {result && <p style={{ lineHeight: 1.5 }}>{result}</p>}
+      <p style={{ lineHeight: 1.5, minHeight: '3.5rem' }}>
+        {result ?? 'Enter a verse and click to fetch.'}
+      </p>
       {err && <p style={{ color: '#fca5a5' }} role="alert">{err}</p>}
     </section>
   );
 }
 
 const cardStyle = {
-  background: '#0f172a', border: '1px solid #1f2937', padding: '1rem',
-  borderRadius: 12, boxShadow: '0 6px 18px rgba(0,0,0,.35)'
+  background: '#0f172a',
+  border: '1px solid #1f2937',
+  padding: '1rem',
+  borderRadius: 12,
+  boxShadow: '0 6px 18px rgba(0,0,0,.35)'
 };
 const inputStyle = {
-  flex: 1, padding: '.55rem .7rem', borderRadius: 10, border: '1px solid #334155',
-  background: '#0b1224', color: '#e5e7eb'
+  flex: 1,
+  padding: '.55rem .7rem',
+  borderRadius: 10,
+  border: '1px solid #334155',
+  background: '#0b1224',
+  color: '#e2e8f0'
 };
 const btnStyle = (accent) => ({
-  background: accent, color: 'white', border: 'none', padding: '.6rem 1rem',
-  borderRadius: 10, cursor: 'pointer', fontSize: '.95rem'
+  background: accent,
+  color: 'white',
+  border: 'none',
+  padding: '.6rem 1rem',
+  borderRadius: 10,
+  cursor: 'pointer',
+  fontSize: '.95rem'
 });
