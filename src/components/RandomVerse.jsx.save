@@ -1,0 +1,38 @@
+import { useState } from 'react';
+
+export default function RandomVerse({ accent = '#2563eb' }) {
+  const [verse, setVerse] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState('');
+
+  async function fetchRandom() {
+    setLoading(true);
+    setErr('');
+    setVerse(null);
+    try {
+      // ✅ Use serverless API route instead of external URL
+      const res = await fetch('/api/random-verse');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const formatted = `${data.bookname} ${data.chapter}:${data.verseNum} 
+— ${data.verse}`;
+      setVerse(formatted);
+    } catch (e) {
+      setErr('Failed to load random verse. Check connection and retry.');
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <section className="verse-section">
+      <h2>Random Verse</h2>
+      <button onClick={fetchRandom} disabled={loading}>
+        {loading ? 'Loading...' : 'Get Random Verse'}
+      </button>
+      {err && <p className="error">{err}</p>}
+      {verse && <div className="verse-display"><p>{verse}</p></div>}
+    </section>
+  );
+}
